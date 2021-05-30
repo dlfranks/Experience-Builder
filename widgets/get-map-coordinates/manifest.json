@@ -1,0 +1,17 @@
+{
+   "name": "get-map-coordinates",
+   "type": "widget",
+   "version": "1.1.0",
+   "dependency": "jimu-arcgis",
+   "exbVersion": "1.1.0",
+   "author": "Deana Franks",
+   "description": "A hello world starter widget",
+   "copyright": "",
+   "license": "",
+   "properties": {},
+   "supportedLocales": ["en"],
+   "defaultSize": {
+     "width": 800,
+     "height": 500
+   }
+ }
