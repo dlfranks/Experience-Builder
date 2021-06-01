@@ -76,7 +76,7 @@ export default class Widget extends BaseWidget<AllWidgetProps<IMConfig>, IState>
             // After the layer is created, zoom to the layer's extent, if the setting is set for that.
             layer.on("layerview-create", event => {
                 if(
-                    this.props.config.hasOwnProperty("zoomToLauer") &&
+                    this.props.config.hasOwnProperty("zoomToLayer") &&
                     this.props.config.zoomToLayer === true
                 ){
                     const query = new this.Query();
@@ -116,7 +116,7 @@ export default class Widget extends BaseWidget<AllWidgetProps<IMConfig>, IState>
                     this.props.useMapWidgetIds &&
                     this.props.useMapWidgetIds.length === 1 && (
                     <JimuMapViewComponent
-                        useMapWidgetIds={this.props.useMapWidgetIds}
+                        useMapWidgetId={this.props.useMapWidgetIds?.[0]}
                         onActiveViewChange={(jmv:JimuMapView) => {
                             this.setState({
                                 jimuMapView: jmv

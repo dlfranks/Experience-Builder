@@ -28,15 +28,25 @@ import { React,
   DataSourceStatus,
   FeatureLayerQueryParams
  } from "jimu-core";
+ import { MapDataSource, 
+  DataSourceTypes,
+  loadArcGISJSAPIModules,
+  JimuMapViewComponent, 
+  JimuMapView 
+} from "jimu-arcgis";
 import * as ReactDataGrid from "react-data-grid";
 
-interface State {
-  query: FeatureLayerQueryParams;
+
+interface IState {
+  //: FeatureLayerQueryParams;
+  rows:null;
+  rowCount:number;
 }
-interface Columns{
+interface ColumnModel{
   key:string;
   name:string;
 }
+
 export default class Widget extends React.PureComponent<AllWidgetProps<any>, any> {
   private columns = [
     { key: "id", name: "ID" },
@@ -51,49 +61,72 @@ export default class Widget extends React.PureComponent<AllWidgetProps<any>, any
   ];
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      rows:null,
+      rowCount:0
+    };
   }
+
   cityNameRef: React.RefObject<HTMLInputElement> = React.createRef();
+  fieldNames:string[] = ["RestaurantName", "City", "Address", "Description"];
+
+  componentDidMount() {
+    this.query();
+  }
+
   query = () => {
     if (!this.isDsConfigured()) {
       return;
     }
     const fieldName = this.props.useDataSources[0].fields[0];
     const w = this.cityNameRef.current && this.cityNameRef.current.value ?
-      `${fieldName} like '%${this.cityNameRef.current.value}%'` : '1=1'
+      `${fieldName} like '%${this.cityNameRef.current.value}%'` : '1=1';
+
+      
+
     this.setState({
-      query: {
-        where: w,
-        outFields: ['*'],
-        pageSize: 10
-      }
+      rows: {...this.rows},
+      rowCount:this.rows.length
     });
   };
 
-  
+  getColumns = ():ColumnModel[] => {
+    const columns:ColumnModel[] = this.fieldNames.map((r, i) => {
+      return {key:r, name:r.toLocaleUpperCase()}
+    });
+    return columns;
+  }
   dataRender = (ds: DataSource, info: IMDataSourceInfo) => {
 
     const fName = this.props.useDataSources[0].fields[0];
-    const fieldNames:string[] = ["RestaurantName", "City", "Address"];
+    //const columns:ColumnModel[] = this.getColumns();
+    
+    
     let data;
     if(ds && ds.getStatus() === DataSourceStatus.Loaded){
 
       data = ds.getRecords().map((r, i) => {
         let row = r.getData();
         const a = {};
-        for(let i = 0; fieldNames.length > i; i++){
-          a[fieldNames[i]] = r.getData()[fieldNames[i]];
+        for(let i = 0; this.fieldNames.length > i; i++){
+          a[this.fieldNames[i]] = r.getData()[this.fieldNames[i]];
         }
         return a;
       });
+
+      this.setState({
+        rows:[...data],
+        rowCount:data.length
+      });
+      this.columns = this.getColumns();
     }
-  
+    
     return <div>
       <ReactDataGrid
             columns={this.columns}
-            rowGetter={(i) => this.rows[i]}
-            rowsCount={3}
-            minHeight={150}
+            rowGetter={(i) => this.state.rows[i]}
+            rowsCount={this.state.rowCount}
+            minHeight={250}
           />
     </div>
     
@@ -108,6 +141,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<any>, any
     }
     return false;
   }
+  
   render() {
     return (
       <div>

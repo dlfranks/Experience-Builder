@@ -32,6 +32,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<any>, any
     { id: 0, title: "row1", count: 20 },
     { id: 1, title: "row1", count: 40 },
     { id: 2, title: "row1", count: 60 },
+    { id: 3, title: "row1", count: 60 },
   ];
   constructor(props) {
     super(props);
@@ -46,7 +47,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<any>, any
           <ReactDataGrid
             columns={this.columns}
             rowGetter={(i) => this.rows[i]}
-            rowsCount={3}
+            rowsCount={4}
             minHeight={150}
           />
         </p>
